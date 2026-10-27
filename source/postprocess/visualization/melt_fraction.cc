@@ -78,11 +78,25 @@ namespace aspect
 
         if (calc_X_H2O(F) > X_H2O_sat)
           {
-            const double T_prime =
-              (temperature - T_solidus + K_H2O * std::pow(X_H2O_sat, gamma_H2O))
-              / (T_lherz_liquidus - T_solidus);
+            const double delta_T_sat = K_H2O * std::pow(X_H2O_sat, gamma_H2O);
 
-            F_corrected = (T_prime > 0.0) ? std::pow(T_prime, beta1) : 0.0;
+            const double T_prime_cpx = (temperature - T_solidus + delta_T_sat) / (T_lherz_liquidus - T_solidus);
+
+            const double F_cpx = (T_prime_cpx > 0.0) ? std::pow(T_prime_cpx, beta1) : 0.0;
+
+            if (F_cpx <= F_cpx_out)
+              F_corrected = F_cpx;
+            else
+              {
+                const double T_prime_opx = (temperature - T_cpx_out + delta_T_sat) / (T_liquidus - T_cpx_out);
+
+                F_corrected = F_cpx_out + (1.0 - F_cpx_out) * std::pow(T_prime_opx, beta2);
+              }
+            //const double T_prime =
+            //  (temperature - T_solidus + K_H2O * std::pow(X_H2O_sat, gamma_H2O))
+            //  / (T_lherz_liquidus - T_solidus);
+
+            //F_corrected = (T_prime > 0.0) ? std::pow(T_prime, beta1) : 0.0;
           }
 
         return F_corrected;
@@ -277,7 +291,7 @@ namespace aspect
             peridotite_melt_fraction = solve_root(func_cpx, bracket_low, bracket_high);
 
             if (peridotite_melt_fraction > 0.0)
-              peridotite_melt_fraction = check_water_saturation(pressure, temperature, peridotite_melt_fraction, T_solidus, T_lherz_liquidus);
+              peridotite_melt_fraction = check_water_saturation(pressure, temperature, peridotite_melt_fraction, T_solidus, T_lherz_liquidus, T_liquidus, F_cpx_out, T_cpx_out);
           }
         else
           {
@@ -295,7 +309,12 @@ namespace aspect
             if (bracket_high_opx >= 1.0)
               peridotite_melt_fraction = 1.0;
             else
-              peridotite_melt_fraction = solve_root(func_opx, bracket_low_opx, bracket_high_opx);
+              {
+                peridotite_melt_fraction = solve_root(func_opx, bracket_low_opx, bracket_high_opx);
+
+                if(peridotite_melt_fraction > 0.0)
+                  peridotite_melt_fraction = check_water_saturation(pressure, temperature, peridotite_melt_fraction, T_solidus, T_lherz_liquidus, T_liquidus, F_cpx_out, T_cpx_out);
+              }
           }
         return peridotite_melt_fraction;
       }
