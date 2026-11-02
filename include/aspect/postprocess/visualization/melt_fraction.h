@@ -184,9 +184,9 @@ namespace aspect
            * @param F Melt fraction, dimensionless.
            * @param T_solidus Peridotite solidus temperature, in K.
            * @param T_lherz_liquidus Lherzolite liquidus temperature, in K.
-+          * @param T_liquidus Peridotite liquidus temperature, in K.
-+          * @param F_cpx_out Melt fraction at clinopyroxene exhaustion, dimensionless.
-+          * @param T_cpx_out Temperature at clinopyroxene exhaustion, in K.
+           * @param T_liquidus Peridotite liquidus temperature, in K.
+           * @param F_cpx_out Melt fraction at clinopyroxene exhaustion, dimensionless.
+           * @param T_cpx_out Temperature at clinopyroxene exhaustion, in K.
            *
            * @returns Melt fraction corrected for water saturation, dimensionless.
            */

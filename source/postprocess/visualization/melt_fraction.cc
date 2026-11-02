@@ -62,7 +62,10 @@ namespace aspect
         const double temperature,
         const double F,
         const double T_solidus,
-        const double T_lherz_liquidus) const
+        const double T_lherz_liquidus,
+        const double T_liquidus,
+        const double F_cpx_out,
+        const double T_cpx_out) const
       {
         const double pressure_GPa = std::max(0.0, pressure) / 1.0e9;
 
@@ -92,11 +95,6 @@ namespace aspect
 
                 F_corrected = F_cpx_out + (1.0 - F_cpx_out) * std::pow(T_prime_opx, beta2);
               }
-            //const double T_prime =
-            //  (temperature - T_solidus + K_H2O * std::pow(X_H2O_sat, gamma_H2O))
-            //  / (T_lherz_liquidus - T_solidus);
-
-            //F_corrected = (T_prime > 0.0) ? std::pow(T_prime, beta1) : 0.0;
           }
 
         return F_corrected;
@@ -312,7 +310,7 @@ namespace aspect
               {
                 peridotite_melt_fraction = solve_root(func_opx, bracket_low_opx, bracket_high_opx);
 
-                if(peridotite_melt_fraction > 0.0)
+                if (peridotite_melt_fraction > 0.0)
                   peridotite_melt_fraction = check_water_saturation(pressure, temperature, peridotite_melt_fraction, T_solidus, T_lherz_liquidus, T_liquidus, F_cpx_out, T_cpx_out);
               }
           }
@@ -503,14 +501,14 @@ namespace aspect
                                  "as in the implementation of Ball et al., 2022."
                                  "Units: $\\frac{1}{\\text{Pa}}$.");
               prm.declare_entry ("beta1", "1.5",
-                                 Patterns::Double (),
+                                 Patterns::Double (0),
                                  "Exponent of the melting temperature in the melt "
-                                 "fraction calculation before clinopyroxene exhaustion. "
+                                 "fraction calculation before clinopyroxene exhaustion. Must be greater than 0. "
                                  "Units: non-dimensional.");
               prm.declare_entry ("beta2", "1.2",
-                                 Patterns::Double (),
+                                 Patterns::Double (0),
                                  "Exponent of the melting temperature in the melt "
-                                 "fraction calculation after clinopyroxene exhaustion. "
+                                 "fraction calculation after clinopyroxene exhaustion. Must be greater than 0. "
                                  "Units: non-dimensional.");
               prm.declare_entry ("Bulk H2O ppm", "0",
                                  Patterns::Double (0),
@@ -623,6 +621,7 @@ namespace aspect
               r2              = prm.get_double ("r2");
               beta1           = prm.get_double ("beta1");
               beta2           = prm.get_double ("beta2");
+              AssertThrow(beta1 > 0.0 && beta2 > 0.0, ExcMessage("The parameters beta1 and beta2 must be strictly positive to ensure that the melt fraction approaches zero at the solidus temperature and F_cpx_out at clinopyroxene exhaustion temperature."));
               bulk_h2o_ppm    = prm.get_double ("Bulk H2O ppm");
               D_H2O           = prm.get_double ("D H2O");
               AssertThrow(D_H2O > 0.0, ExcMessage("The parameter 'D H2O' has to be larger than 0 because the melt water concentration is evaluated at zero melt fraction."));
