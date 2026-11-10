@@ -1,22 +1,16 @@
-/*
-  Copyright (C) 2013 - 2026 by the authors of the ASPECT code.
-
-  This file is part of ASPECT.
-
-  ASPECT is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
-
-  ASPECT is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with ASPECT; see the file LICENSE.  If not see
-  <http://www.gnu.org/licenses/>.
-*/
+// ------------------------------------------------------
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+//
+// SPDX-FileCopyrightText: Copyright (C) 2013-2026 by the ASPECT authors.
+//
+// This file is part of ASPECT.
+//
+// Detailed license information governing the source code and
+// contributions can be found in the folder LICENSES and in
+// LICENSE and CONTRIBUTING.md at the top level directory.
+//
+// ------------------------------------------------------
 
 
 #ifndef _aspect_postprocess_visualization_melt_fraction_h
@@ -184,6 +178,9 @@ namespace aspect
            * @param F Melt fraction, dimensionless.
            * @param T_solidus Peridotite solidus temperature, in K.
            * @param T_lherz_liquidus Lherzolite liquidus temperature, in K.
+           * @param T_liquidus Peridotite liquidus temperature, in K.
+           * @param F_cpx_out Melt fraction at clinopyroxene exhaustion, dimensionless.
+           * @param T_cpx_out Temperature at clinopyroxene exhaustion, in K.
            *
            * @returns Melt fraction corrected for water saturation, dimensionless.
            */
@@ -191,7 +188,10 @@ namespace aspect
                                         const double temperature,
                                         const double F,
                                         const double T_solidus,
-                                        const double T_lherz_liquidus) const;
+                                        const double T_lherz_liquidus,
+                                        const double T_liquidus,
+                                        const double F_cpx_out,
+                                        const double T_cpx_out) const;
 
           /**
            * Compute the melt fraction for peridotite after Katz et al. (2003).
